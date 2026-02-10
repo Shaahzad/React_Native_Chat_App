@@ -15,7 +15,7 @@ const SplashScreen = () => {
     <View style={styles.container}>
       <StatusBar barStyle={'light-content'} backgroundColor={colors.neutral900} />
       <Animated.Image
-        source={require('../../assets/splashImage.png')}
+        source={require('../assets/splashImage.png')}
         entering={FadeInDown.duration(700).springify()}
         resizeMode={'contain'}
         style={styles.logo}

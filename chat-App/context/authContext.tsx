@@ -4,6 +4,7 @@ import { createContext, ReactNode, useContext, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { jwtDecode } from "jwt-decode"
 import { login, register } from "@/services/authService";
+
 export const AuthContext = createContext<AuthContextProps>({
     token: null,
     user: null,
