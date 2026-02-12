@@ -1,6 +1,6 @@
 import { AuthContextProps, DecodedTokenProps, UserProps } from "@/types";
 import { useRouter } from "expo-router";
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { jwtDecode } from "jwt-decode"
 import { login, register } from "@/services/authService";
@@ -20,6 +20,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<UserProps | null>(null);
     const router = useRouter()
 
+
+    useEffect(()=>{
+        loadToken()
+    }, [])
+
+    const loadToken = async () => {
+        const storedToken = await AsyncStorage.getItem("token")
+        if (storedToken) {
+            try {
+                const decoded = jwtDecode<DecodedTokenProps>(storedToken)
+                if (decoded.exp && decoded.exp < Date.now() / 1000) {
+                    await AsyncStorage.removeItem("token")
+                    gotoWelcomePage();
+                    return;
+                }
+
+                setToken(storedToken)
+                setUser(decoded.user)
+                gotoHomePage()
+                
+            } catch (error) {
+                gotoWelcomePage()
+                console.log("failed to decode token", error)
+            }
+        } else {
+            gotoWelcomePage()
+        }
+    }
+
+    const gotoHomePage = () => {
+        setTimeout(() => {
+            router.replace('/(main)/home')
+        }, 1500)
+    }
+
+    const gotoWelcomePage = () => {
+        setTimeout(() => {
+            router.replace('/(auth)/welcome')
+        }, 1500)
+    }
 
     const updateToken = async (token: string) => {
         if (token) {
@@ -51,11 +91,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     return (
-        <AuthContext.Provider value= {{ token, user, signIn, signUp, signOut, updateToken}}
+        <AuthContext.Provider value={{ token, user, signIn, signUp, signOut, updateToken }}
         >
-        {children}
+            {children}
         </AuthContext.Provider>
-)
+    )
 }
 
 

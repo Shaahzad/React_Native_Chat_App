@@ -30,7 +30,7 @@ const Register = () => {
             setIsLoading(true)
             await signUp(emailRef.current, passwordRef.current, nameRef.current, "")
         } catch (error: any) {
-            Alert.alert("Registration Error", error.message)
+            Alert.alert("Registration Error", error)
         } finally {
             setIsLoading(false)
         }
